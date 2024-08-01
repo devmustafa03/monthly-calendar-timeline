@@ -4,36 +4,33 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import CalendarHeader from './CalendarHeader';
 import CalendarGrid from './CalendarGrid';
 import EventModal from './EventModal';
-import { CalendarProvider } from '../context/CalenderContext';
 import ResourceModal from './ResourceModal';
+import { Event } from '../types';
+import { CalendarProvider } from '../context/CalenderContext';
 
 const FinalCalendar: React.FC = () => {
   const [eventModalOpen, setEventModalOpen] = useState(false);
   const [resourceModalOpen, setResourceModalOpen] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+
+  const handleEventClick = (event: Event) => {
+    setSelectedEvent(event);
+    setEventModalOpen(true);
+  };
 
   return (
     <CalendarProvider>
       <DndProvider backend={HTML5Backend}>
         <div className="h-screen flex flex-col">
           <CalendarHeader onAddResource={() => setResourceModalOpen(true)} />
-          <CalendarGrid
-            onCellDoubleClick={(date: any) => {
-              setSelectedDate(date);
-              setSelectedEvent(null);
-              setEventModalOpen(true);
-            }}
-            onEventClick={(event: any) => {
-              setSelectedEvent(event);
-              setEventModalOpen(true);
-            }}
-          />
+          <CalendarGrid onEventClick={(e: Event | any) =>handleEventClick(e)} />
           <EventModal
             isOpen={eventModalOpen}
-            onClose={() => setEventModalOpen(false)}
+            onClose={() => {
+              setEventModalOpen(false);
+              setSelectedEvent(null);
+            }}
             event={selectedEvent}
-            date={selectedDate}
           />
           <ResourceModal
             isOpen={resourceModalOpen}

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer } from 'react';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { CalendarAction, CalendarState } from '../types';
 
 const initialState: CalendarState = {
@@ -36,13 +36,29 @@ const calendarReducer = (state: CalendarState, action: CalendarAction): Calendar
 const CalendarContext = createContext<{
   state: CalendarState;
   dispatch: React.Dispatch<CalendarAction>;
+  createEvent: (date: Dayjs, resource: string) => void;
 } | null>(null);
+
+const COLORS = ['#3788d8', '#ff9f89', '#8fbc8f', '#ffd700', '#ba55d3', '#20b2aa'];
 
 export const CalendarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(calendarReducer, initialState);
 
+  const createEvent = (date: Dayjs, resource: string) => {
+    const newEvent: Event | any = {
+      id: Date.now().toString(),
+      title: 'New Event',
+      description: '',
+      start: date,
+      end: date.endOf('day'),
+      resource,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    };
+    dispatch({ type: 'ADD_EVENT', payload: newEvent });
+  };
+
   return (
-    <CalendarContext.Provider value={{ state, dispatch }}>
+    <CalendarContext.Provider value={{ state, dispatch, createEvent }}>
       {children}
     </CalendarContext.Provider>
   );

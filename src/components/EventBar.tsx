@@ -28,22 +28,28 @@ const EventBar: React.FC<EventBarProps> = ({ event, onClick }) => {
     });
   };
 
+  const duration = event.end.diff(event.start, 'minute');
+  const height = Math.max(30, Math.min(duration / 2, 100));
+
   return (
     <Resizable
-      size={{ width: '100%', height: event.end.diff(event.start, 'minute') }}
+      size={{ width: '95%', height }}
       onResizeStop={handleResize}
       enable={{ bottom: true }}
       minHeight={30}
     >
       <div
         ref={drag}
-        className={`p-1 mb-1 rounded text-black text-sm ${event.color} ${
+        className={`p-1 mb-1 rounded text-sm overflow-hidden ${
           isDragging ? 'opacity-50' : ''
         }`}
         onClick={onClick}
+        style={{ backgroundColor: event.color, color: 'white' }}
       >
-        <span>{event.title}</span>
-        <span className="float-right">{event.start.format('HH:mm')} - {event.end.format('HH:mm')}</span>
+        <div className="font-bold truncate">{event.title}</div>
+        <div className="text-xs">
+          {event.start.format('HH:mm')} - {event.end.format('HH:mm')}
+        </div>
       </div>
     </Resizable>
   );

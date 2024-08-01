@@ -3,11 +3,11 @@ import CalendarCell from './CalendarCell';
 import { useCalendar } from '../context/CalenderContext';
 
 interface CalendarGridProps {
-  onCellDoubleClick: (date: Date, resource: string) => void;
+  // onCellDoubleClick: (date: Date, resource: string) => void;
   onEventClick: (event: Event) => void;
 }
 
-const CalendarGrid: React.FC<CalendarGridProps> = ({ onCellDoubleClick, onEventClick }) => {
+const CalendarGrid: React.FC<CalendarGridProps> = ({ onEventClick }) => {
   const { state } = useCalendar();
   const { currentDate, resources } = state;
 
@@ -35,8 +35,8 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ onCellDoubleClick, onEventC
                 <CalendarCell
                   key={`${resource.id}-${day}`}
                   resource={resource}
-                  date={currentDate.date(day).toDate()}
-                  onDoubleClick={onCellDoubleClick}
+                  date={currentDate.date(day)}
+                  // onDoubleClick={onCellDoubleClick}
                   onEventClick={onEventClick}
                 />
               ))}
