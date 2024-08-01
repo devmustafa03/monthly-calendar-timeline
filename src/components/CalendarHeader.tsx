@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCalendar } from '../context/CalenderContext';
+import useCalendar from '../hooks/useCalendar';
 import dayjs from 'dayjs';
 
 interface CalendarProps {

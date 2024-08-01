@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import CalendarCell from './CalendarCell';
-import { useCalendar } from '../context/CalenderContext';
+import useCalendar from '../hooks/useCalendar';
 import dayjs from 'dayjs';
 
 interface CalendarGridProps {
@@ -32,7 +32,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ onEventClick }) => {
 
   return (
     <div className="flex-1 overflow-auto">
-      <table className="w-max border-collapse">
+      <table className="w-max border-collapse" style={{ position: 'relative' }}>
         <thead>
           <tr>
             <th className="border p-1"></th>

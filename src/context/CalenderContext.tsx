@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useReducer } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarAction, CalendarState } from '../types';
 
@@ -33,7 +33,7 @@ const calendarReducer = (state: CalendarState, action: CalendarAction): Calendar
   }
 };
 
-const CalendarContext = createContext<{
+export const CalendarContext = createContext<{
   state: CalendarState;
   dispatch: React.Dispatch<CalendarAction>;
   createEvent: (date: Dayjs, resource: string) => void;
@@ -45,29 +45,22 @@ export const CalendarProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [state, dispatch] = useReducer(calendarReducer, initialState);
 
   const createEvent = (date: Dayjs, resource: string) => {
-    const newEvent: Event | any = {
-      id: Date.now().toString(),
-      title: 'New Event',
-      description: '',
-      start: date,
-      end: date.endOf('day'),
-      resource,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
-    };
-    dispatch({ type: 'ADD_EVENT', payload: newEvent });
+  const newEvent: Event | any = {
+    id: Date.now().toString(),
+    title: 'New Event',
+    description: '',
+    start: date,
+    end: date.add(1, 'hour'),
+    resource,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    isInitial: true,
   };
+  dispatch({ type: 'ADD_EVENT', payload: newEvent });
+};
 
   return (
     <CalendarContext.Provider value={{ state, dispatch, createEvent }}>
       {children}
     </CalendarContext.Provider>
   );
-};
-
-export const useCalendar = () => {
-  const context = useContext(CalendarContext);
-  if (!context) {
-    throw new Error('useCalendar must be used within a CalendarProvider');
-  }
-  return context;
 };

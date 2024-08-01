@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useCalendar } from '../context/CalenderContext';
+import useCalendar from '../hooks/useCalendar';
 
 interface ResourceModalProps {
   isOpen: boolean;
@@ -35,7 +35,7 @@ const ResourceModal: React.FC<ResourceModalProps> = ({ isOpen, onClose }) => {
             className="border p-2 mb-2 w-full"
             required
           />
-          <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
+          <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
             Add Resource
           </button>
           <button

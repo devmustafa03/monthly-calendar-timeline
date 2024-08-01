@@ -8,6 +8,7 @@ export interface Event {
   end: Dayjs;
   resource: string;
   color: string;
+  isInitial: boolean;
 }
 
 export interface Resource {
@@ -27,3 +28,4 @@ export type CalendarAction =
   | { type: 'DELETE_EVENT'; payload: string }
   | { type: 'ADD_RESOURCE'; payload: Resource }
   | { type: 'SET_CURRENT_DATE'; payload: Dayjs };
+

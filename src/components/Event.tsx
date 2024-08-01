@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
-import { useCalendar } from '../context/CalenderContext';
+import useCalendar from '../hooks/useCalendar';
 
 interface EventProps {
   event: {
