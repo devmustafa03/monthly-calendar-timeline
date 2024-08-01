@@ -1,5 +1,7 @@
 # Monthly Calendar Timeline
 
+![image](https://github.com/user-attachments/assets/45d78616-0667-402d-8291-431d27f7e1fd)
+
 ## Overview
 
 This project is a versatile and interactive monthly calendar timeline built with React and TypeScript. It supports event management with drag-and-drop functionality, resource allocation, and responsive design. The calendar provides an intuitive interface for viewing and managing events across different resources.
