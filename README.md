@@ -14,6 +14,8 @@ This project is a versatile and interactive monthly calendar timeline built with
 - **Interactive Modals**: Edit events and resources through modals.
 - **Responsive Design**: Adjusts to different screen sizes.
 - **Dynamic Color Coding**: Events can be color-coded for better visibility.
+- **Save Events and Resources in Local Storage**
+- **Resizeable EventBar from both sides**
 
 ## Installation
 
