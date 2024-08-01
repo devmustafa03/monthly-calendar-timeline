@@ -48,11 +48,11 @@ const EventBar: React.FC<EventBarProps> = ({
       const minutesFromStartOfDay = eventStart.diff(startOfDay, 'minute');
       const durationInMinutes = eventEnd.diff(eventStart, 'minute');
       const minutesInDay = 24 * 60;
-
+  
       const left = (minutesFromStartOfDay / minutesInDay) * cellWidth;
       const width = (durationInMinutes / minutesInDay) * cellWidth;
-      const top = (index % maxOverlap) * 45;
-
+      const top = (index % maxOverlap) * 45 + (Math.floor(index / maxOverlap) * 45);
+  
       setPosition({ left, width, top });
     }
   }, [event.start, event.end, cellWidth, cellStart, isInitial, index, maxOverlap]);
@@ -69,7 +69,7 @@ const EventBar: React.FC<EventBarProps> = ({
 
   const handleResize = useCallback((e: MouseEvent) => {
     if (!isResizing || !eventRef.current) return;
-
+  
     const eventRect = eventRef.current.getBoundingClientRect();
     const minutesPerPixel = (24 * 60) / cellWidth;
     
@@ -77,18 +77,18 @@ const EventBar: React.FC<EventBarProps> = ({
       const diffX = e.clientX - eventRect.left;
       const diffMinutes = Math.round(diffX * minutesPerPixel);
       const newStart = event.start.add(diffMinutes, 'minute');
-      if (newStart.isBefore(event.end)) {
+      if (newStart.isBefore(event.end) && newStart.isAfter(cellStart.startOf('day').add((index - 1) * 45, 'minute'))) {
         onResize(event, newStart, event.end);
       }
     } else {
       const diffX = e.clientX - eventRect.right;
       const diffMinutes = Math.round(diffX * minutesPerPixel);
       const newEnd = event.end.add(diffMinutes, 'minute');
-      if (newEnd.isAfter(event.start)) {
+      if (newEnd.isAfter(event.start) && newEnd.isBefore(cellStart.startOf('day').add((index + 1) * 45, 'minute'))) {
         onResize(event, event.start, newEnd);
       }
     }
-  }, [isResizing, event, cellWidth, onResize]);
+  }, [isResizing, cellWidth, event, cellStart, index, onResize]);
 
   const handleResizeEnd = useCallback(() => {
     setIsResizing(null);
