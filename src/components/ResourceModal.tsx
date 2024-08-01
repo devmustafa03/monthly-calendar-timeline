@@ -23,7 +23,7 @@ const ResourceModal: React.FC<ResourceModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
       <div className="bg-white p-4 rounded">
         <h2 className="text-xl font-bold mb-4">Add Resource</h2>
         <form onSubmit={handleSubmit}>
