@@ -48,7 +48,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ onEventClick }) => {
         <tbody>
           {resources.map((resource: any) => (
             <tr key={resource.id}>
-              <td className="border p-2 w-48">{resource.name}</td>
+              <td className="border p-2 w-48 font-semibold">{resource.name}</td>
               {days.map((day) => (
                 <CalendarCell
                   key={`${resource.id}-${day}`}
