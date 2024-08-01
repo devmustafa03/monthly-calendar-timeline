@@ -9,9 +9,10 @@ interface EventBarProps {
   onClick: () => void;
   cellWidth: number;
   onResize: (event: Event, newEnd: dayjs.Dayjs) => void;
+  style?: React.CSSProperties;
 }
 
-const EventBar: React.FC<EventBarProps> = ({ event, onClick, cellWidth, onResize }) => {
+const EventBar: React.FC<EventBarProps> = ({ event, onClick, cellWidth, onResize, style }) => {
   const eventRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState(false);
   const [width, setWidth] = useState(0);
@@ -69,10 +70,16 @@ const EventBar: React.FC<EventBarProps> = ({ event, onClick, cellWidth, onResize
     };
   }, [isResizing, handleResize, handleResizeEnd]);
 
+  const formatTime = (time: dayjs.Dayjs) => {
+    return time.format('h:mm A'); // This will format the time with AM/PM
+  };
+
+  const hoverTitle = `${event.title}\nStart: ${formatTime(event.start)}\nEnd: ${formatTime(event.end)}`;
+
   return (
     <div
       ref={preview}
-      className={`p-1 rounded text-sm overflow-hidden relative ${
+      className={`p-1 rounded text-sm overflow-hidden absolute ${
         isDragging ? 'opacity-50' : ''
       }`}
       onClick={onClick}
@@ -81,18 +88,18 @@ const EventBar: React.FC<EventBarProps> = ({ event, onClick, cellWidth, onResize
         color: 'white',
         width: `${width}px`,
         height: '40px',
-        position: 'absolute',
-        top: '5px',
         left: '0',
         zIndex: 10,
-        cursor: isResizing ? 'ew-resize' : 'move'
+        cursor: isResizing ? 'ew-resize' : 'move',
+        ...style
       }}
+      title={hoverTitle}
     >
       <div ref={eventRef}>
         <div ref={drag} className="h-full w-full">
           <div className="font-bold truncate">{event.title}</div>
           <div className="text-xs">
-            {event.start.format('HH:mm')} - {event.end.format('HH:mm')}
+            {formatTime(event.start)} - {formatTime(event.end)}
           </div>
         </div>
         <div

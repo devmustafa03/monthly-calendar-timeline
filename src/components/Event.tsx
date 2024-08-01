@@ -34,8 +34,7 @@ const Event: React.FC<EventProps> = ({ event }) => {
         isDragging ? 'opacity-50' : ''
       }`}
       onClick={() => {
-        // Open event modal for editing
-        console.log('Edit event:', event);
+        console.log(event);
       }}
     >
       <span>{event.title}</span>
