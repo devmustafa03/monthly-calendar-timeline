@@ -4,7 +4,7 @@ import { CalendarAction, CalendarState } from '../types';
 
 const initialState: CalendarState = {
   events: [],
-  resources: [{ id: '1', name: 'Resource A' }],
+  resources: [{ id: '1', name: 'Resource A' }, { id: '2', name: 'Resource B' }, { id: '3', name: 'Resource C' }, { id: '4', name: 'Resource D' }],
   currentDate: dayjs(),
 };
 

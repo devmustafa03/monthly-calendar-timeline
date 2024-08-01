@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useDrop } from 'react-dnd';
-import { Resource } from '../types';
+import { Resource, Event } from '../types';
 import { useCalendar } from '../context/CalenderContext';
 import dayjs from 'dayjs';
 import EventBar from './EventBar';
@@ -8,11 +8,11 @@ import EventBar from './EventBar';
 interface CalendarCellProps {
   resource: Resource;
   date: dayjs.Dayjs;
-  // onDoubleClick: (date: Date, resource: string) => void;
   onEventClick: (event: Event) => void;
+  cellWidth: number;
 }
 
-const CalendarCell: React.FC<CalendarCellProps> = ({ resource, date, onEventClick }) => {
+const CalendarCell: React.FC<CalendarCellProps> = ({ resource, date, onEventClick, cellWidth }) => {
   const { state, dispatch, createEvent } = useCalendar();
 
   const [{ isOver }, drop] = useDrop({
@@ -20,9 +20,15 @@ const CalendarCell: React.FC<CalendarCellProps> = ({ resource, date, onEventClic
     drop: (item: { id: string }) => {
       const event = state.events.find((e) => e.id === item.id);
       if (event) {
+        const duration = event.end.diff(event.start, 'minute');
         dispatch({
           type: 'UPDATE_EVENT',
-          payload: { ...event, start: date, end: date.endOf('day'), resource: resource.id },
+          payload: { 
+            ...event, 
+            start: date.hour(event.start.hour()).minute(event.start.minute()),
+            end: date.hour(event.start.hour()).minute(event.start.minute()).add(duration, 'minute'),
+            resource: resource.id 
+          },
         });
       }
     },
@@ -34,22 +40,35 @@ const CalendarCell: React.FC<CalendarCellProps> = ({ resource, date, onEventClic
   const cellEvents = state.events.filter(
     (event) =>
       event.resource === resource.id &&
-      event.start.isSame(date, 'day')
+      date.isSame(event.start, 'day')
   );
 
   const handleDoubleClick = () => {
     createEvent(date, resource.id);
   };
 
+  const handleResize = useCallback((event: Event, newEnd: dayjs.Dayjs) => {
+    dispatch({
+      type: 'UPDATE_EVENT',
+      payload: { ...event, end: newEnd },
+    });
+  }, [dispatch]);
+
   return (
     <td
       ref={drop}
       className={`border p-2 ${isOver ? 'bg-gray-200' : ''} relative`}
       onDoubleClick={handleDoubleClick}
-      style={{ height: '100px', minWidth: '150px' }}
+      style={{ height: '100px', minWidth: `${cellWidth}px` }}
     >
-      {cellEvents.map((event: Event | any) => (
-        <EventBar key={event.id} event={event} onClick={() => onEventClick(event)} />
+      {cellEvents.map((event: Event) => (
+        <EventBar 
+          key={event.id} 
+          event={event} 
+          onClick={() => onEventClick(event)} 
+          cellWidth={cellWidth}
+          onResize={handleResize}
+        />
       ))}
     </td>
   );
