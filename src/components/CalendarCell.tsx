@@ -53,49 +53,45 @@ const CalendarCell: React.FC<CalendarCellProps> = ({ resource, date, onEventClic
   });
 
   const cellEvents = state.events.filter(
-    (event) =>
-      event.resource === resource.id &&
-      date.isSame(event.start, 'day')
+    (event) => event.resource === resource.id && date.isSame(event.start, 'day')
   );
 
-  const sortedEvents = [...cellEvents].sort((a, b) => {
-    if (a.start.isSame(b.start)) {
-      return b.end.diff(b.start) - a.end.diff(a.start);
-    }
-    return a.start.diff(b.start);
-  });
+  const sortedEvents = [...cellEvents].sort((a, b) => a.start.diff(b.start));
 
-  const calculateOverlaps = (events: Event[]) => {
-    const overlaps: { [key: string]: number } = {};
-    const maxOverlap: { [key: string]: number } = {};
+  const calculateEventPositions = (events: Event[]) => {
+    const positions: { [key: string]: { row: number; overlappingEvents: number } } = {};
+    const rows: Event[][] = [];
 
-    events.forEach((event, i) => {
-      overlaps[event.id] = 0;
-      maxOverlap[event.id] = 1;
-
-      for (let j = i + 1; j < events.length; j++) {
-        if (event.end.isAfter(events[j].start)) {
-          overlaps[event.id]++;
-          overlaps[events[j].id] = (overlaps[events[j].id] || 0) + 1;
-          maxOverlap[event.id] = Math.max(maxOverlap[event.id], overlaps[event.id] + 1);
-          maxOverlap[events[j].id] = Math.max(maxOverlap[events[j].id], overlaps[events[j].id] + 1);
-        } else {
+    events.forEach((event) => {
+      let row = 0;
+      const condition = true;
+      while (condition) {
+        if (!rows[row]) {
+          rows[row] = [];
+        }
+        const canFit = rows[row].every(existingEvent => 
+          !event.start.isBefore(existingEvent.end) || !event.end.isAfter(existingEvent.start)
+        );
+        if (canFit) {
+          rows[row].push(event);
+          positions[event.id] = { row, overlappingEvents: rows[row].length };
           break;
         }
+        row++;
       }
     });
 
-    return { overlaps, maxOverlap };
+    return { positions, totalRows: rows.length };
   };
 
-  const { overlaps, maxOverlap } = calculateOverlaps(sortedEvents);
+  const { positions, totalRows } = calculateEventPositions(sortedEvents);
 
   useEffect(() => {
-    const newHeight = Math.max(70, Object.values(maxOverlap).reduce((max, value) => Math.max(max, value), 0) * 45);
+    const newHeight = Math.max(70, totalRows * 50);
     setCellHeight(newHeight);
-  }, [maxOverlap]);
+  }, [totalRows]);
 
-  const handleDoubleClick = (e: React.MouseEvent<any>) => {
+  const handleDoubleClick = (e: React.MouseEvent<HTMLTableDataCellElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const offsetX = e.clientX - rect.left;
     const minutesFromStart = Math.floor((offsetX / cellWidth) * 24 * 60);
@@ -129,7 +125,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({ resource, date, onEventClic
       onDoubleClick={handleDoubleClick}
       style={{ height: `${cellHeight}px`, minWidth: `${cellWidth}px`, transition: 'height 0.3s ease' }}
     >
-      {sortedEvents.map((event: Event, index: number) => (
+      {sortedEvents.map((event: Event) => (
         <EventBar 
           key={event.id} 
           event={event} 
@@ -138,9 +134,8 @@ const CalendarCell: React.FC<CalendarCellProps> = ({ resource, date, onEventClic
           onResize={handleResize}
           cellStart={date.startOf('day')}
           isInitial={event.isInitial}
-          overlap={overlaps[event.id]}
-          maxOverlap={maxOverlap[event.id]}
-          index={index}
+          position={positions[event.id]}
+          totalRows={totalRows}
         />
       ))}
     </td>

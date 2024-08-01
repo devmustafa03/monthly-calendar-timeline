@@ -10,9 +10,8 @@ interface EventBarProps {
   onResize: (event: Event, newStart: dayjs.Dayjs, newEnd: dayjs.Dayjs) => void;
   cellStart: dayjs.Dayjs;
   isInitial: boolean;
-  overlap: number;
-  maxOverlap: number;
-  index: number;
+  position: { row: number; overlappingEvents: number };
+  totalRows: number;
 }
 
 const EventBar: React.FC<EventBarProps> = ({ 
@@ -22,13 +21,12 @@ const EventBar: React.FC<EventBarProps> = ({
   onResize, 
   cellStart, 
   isInitial,
-  overlap,
-  maxOverlap,
-  index
+  position,
+  totalRows
 }) => {
   const eventRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState<'start' | 'end' | null>(null);
-  const [position, setPosition] = useState({ left: 0, width: cellWidth, top: 0 });
+  const [eventPosition, setEventPosition] = useState({ left: 0, width: cellWidth, top: 0 });
 
   const [{ isDragging }, drag, preview] = useDrag({
     type: 'EVENT',
@@ -40,7 +38,7 @@ const EventBar: React.FC<EventBarProps> = ({
 
   const calculatePosition = useCallback(() => {
     if (isInitial) {
-      setPosition({ left: 0, width: cellWidth, top: index * 45 });
+      setEventPosition({ left: 0, width: cellWidth, top: position.row * 50 });
     } else {
       const startOfDay = cellStart.startOf('day');
       const eventStart = event.start;
@@ -51,11 +49,11 @@ const EventBar: React.FC<EventBarProps> = ({
 
       const left = (minutesFromStartOfDay / minutesInDay) * cellWidth;
       const width = (durationInMinutes / minutesInDay) * cellWidth;
-      const top = (index % maxOverlap) * 45;
+      const top = position.row * 50;
 
-      setPosition({ left, width, top });
+      setEventPosition({ left, width, top });
     }
-  }, [event.start, event.end, cellWidth, cellStart, isInitial, index, maxOverlap]);
+  }, [event.start, event.end, cellWidth, cellStart, isInitial, position]);
 
   useEffect(() => {
     calculatePosition();
@@ -121,11 +119,11 @@ const EventBar: React.FC<EventBarProps> = ({
       style={{ 
         backgroundColor: event.color, 
         color: 'white',
-        width: `${position.width}px`,
-        height: '40px',
-        left: `${position.left}px`,
-        top: `${position.top + 6}px`,
-        zIndex: 10 + index,
+        width: `${eventPosition.width}px`,
+        height: '45px',
+        left: `${eventPosition.left}px`,
+        top: `${eventPosition.top + 3}px`,
+        zIndex: 10 + position.row,
         cursor: isResizing ? 'ew-resize' : 'move',
       }}
       title={hoverTitle}
