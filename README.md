@@ -105,17 +105,17 @@ The `CalendarProvider` component uses React Context and Reducer to manage the st
 
 ## Questions
 
-### 3 things that you learned from this assignment?
+### Q 3 things that you learned from this assignment?
 
 - **Dayjs library**: I learn to use dayjs for finding date calculate the timing finding the between range using isBetween. This library ease work of calculation.
 - **Drag Drop Feature**: I learn how to use react-dnd library to implement drag n drop between cells.
 - **Resizable event bar**: I learn about how to merge the date and time to implement resizability of the event bars.
 
-### What was the most difficult part of the assignment?
+### Q What was the most difficult part of the assignment?
 
 The main difficult part is to implement the overlaping of the multiple events so I make them come below the previous ones but it doen't cover some edge cases.
 
-### What you would have done differently given more time?
+### Q What you would have done differently given more time?
 
 I would make the UX more smooth, implement dark and light mode, added language support other than english and a collab feature.
 
