@@ -10,12 +10,25 @@ interface EventBarProps {
   onResize: (event: Event, newStart: dayjs.Dayjs, newEnd: dayjs.Dayjs) => void;
   cellStart: dayjs.Dayjs;
   isInitial: boolean;
+  overlap: number;
+  maxOverlap: number;
+  index: number;
 }
 
-const EventBar: React.FC<EventBarProps> = ({ event, onClick, cellWidth, onResize, cellStart, isInitial }) => {
+const EventBar: React.FC<EventBarProps> = ({ 
+  event, 
+  onClick, 
+  cellWidth, 
+  onResize, 
+  cellStart, 
+  isInitial,
+  overlap,
+  maxOverlap,
+  index
+}) => {
   const eventRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState<'start' | 'end' | null>(null);
-  const [position, setPosition] = useState({ left: 0, width: cellWidth });
+  const [position, setPosition] = useState({ left: 0, width: cellWidth, top: 0 });
 
   const [{ isDragging }, drag, preview] = useDrag({
     type: 'EVENT',
@@ -27,7 +40,7 @@ const EventBar: React.FC<EventBarProps> = ({ event, onClick, cellWidth, onResize
 
   const calculatePosition = useCallback(() => {
     if (isInitial) {
-      setPosition({ left: 0, width: cellWidth });
+      setPosition({ left: 0, width: cellWidth, top: index * 45 });
     } else {
       const startOfDay = cellStart.startOf('day');
       const eventStart = event.start;
@@ -38,10 +51,11 @@ const EventBar: React.FC<EventBarProps> = ({ event, onClick, cellWidth, onResize
 
       const left = (minutesFromStartOfDay / minutesInDay) * cellWidth;
       const width = (durationInMinutes / minutesInDay) * cellWidth;
+      const top = (index % maxOverlap) * 45;
 
-      setPosition({ left, width });
+      setPosition({ left, width, top });
     }
-  }, [event.start, event.end, cellWidth, cellStart, isInitial]);
+  }, [event.start, event.end, cellWidth, cellStart, isInitial, index, maxOverlap]);
 
   useEffect(() => {
     calculatePosition();
@@ -110,9 +124,9 @@ const EventBar: React.FC<EventBarProps> = ({ event, onClick, cellWidth, onResize
         width: `${position.width}px`,
         height: '40px',
         left: `${position.left}px`,
-        zIndex: 10,
+        top: `${position.top + 6}px`,
+        zIndex: 10 + index,
         cursor: isResizing ? 'ew-resize' : 'move',
-        top: '6px',
       }}
       title={hoverTitle}
     >

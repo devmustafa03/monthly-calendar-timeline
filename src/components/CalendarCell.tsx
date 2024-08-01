@@ -58,10 +58,42 @@ const CalendarCell: React.FC<CalendarCellProps> = ({ resource, date, onEventClic
       date.isSame(event.start, 'day')
   );
 
+  const sortedEvents = [...cellEvents].sort((a, b) => {
+    if (a.start.isSame(b.start)) {
+      return b.end.diff(b.start) - a.end.diff(a.start);
+    }
+    return a.start.diff(b.start);
+  });
+
+  const calculateOverlaps = (events: Event[]) => {
+    const overlaps: { [key: string]: number } = {};
+    const maxOverlap: { [key: string]: number } = {};
+
+    events.forEach((event, i) => {
+      overlaps[event.id] = 0;
+      maxOverlap[event.id] = 1;
+
+      for (let j = i + 1; j < events.length; j++) {
+        if (event.end.isAfter(events[j].start)) {
+          overlaps[event.id]++;
+          overlaps[events[j].id] = (overlaps[events[j].id] || 0) + 1;
+          maxOverlap[event.id] = Math.max(maxOverlap[event.id], overlaps[event.id] + 1);
+          maxOverlap[events[j].id] = Math.max(maxOverlap[events[j].id], overlaps[events[j].id] + 1);
+        } else {
+          break;
+        }
+      }
+    });
+
+    return { overlaps, maxOverlap };
+  };
+
+  const { overlaps, maxOverlap } = calculateOverlaps(sortedEvents);
+
   useEffect(() => {
-    const newHeight = Math.max(70, cellEvents.length * 45);
+    const newHeight = Math.max(70, Object.values(maxOverlap).reduce((max, value) => Math.max(max, value), 0) * 45);
     setCellHeight(newHeight);
-  }, [cellEvents]);
+  }, [maxOverlap]);
 
   const handleDoubleClick = (e: React.MouseEvent<any>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -97,7 +129,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({ resource, date, onEventClic
       onDoubleClick={handleDoubleClick}
       style={{ height: `${cellHeight}px`, minWidth: `${cellWidth}px`, transition: 'height 0.3s ease' }}
     >
-      {cellEvents.map((event: Event) => (
+      {sortedEvents.map((event: Event, index: number) => (
         <EventBar 
           key={event.id} 
           event={event} 
@@ -106,6 +138,9 @@ const CalendarCell: React.FC<CalendarCellProps> = ({ resource, date, onEventClic
           onResize={handleResize}
           cellStart={date.startOf('day')}
           isInitial={event.isInitial}
+          overlap={overlaps[event.id]}
+          maxOverlap={maxOverlap[event.id]}
+          index={index}
         />
       ))}
     </td>
