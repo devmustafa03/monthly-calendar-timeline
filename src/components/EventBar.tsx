@@ -11,7 +11,7 @@ interface EventBarProps {
   cellStart: dayjs.Dayjs;
   isInitial: boolean;
   position: { row: number; overlappingEvents: number };
-  totalRows: number;
+  totalRows?: number;
 }
 
 const EventBar: React.FC<EventBarProps> = ({ 
@@ -22,7 +22,6 @@ const EventBar: React.FC<EventBarProps> = ({
   cellStart, 
   isInitial,
   position,
-  totalRows
 }) => {
   const eventRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState<'start' | 'end' | null>(null);
