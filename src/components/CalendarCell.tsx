@@ -59,7 +59,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({ resource, date, onEventClic
       ref={drop}
       className={`border p-2 ${isOver ? 'bg-gray-200' : ''} relative`}
       onDoubleClick={handleDoubleClick}
-      style={{ height: '100px', minWidth: `${cellWidth}px` }}
+      style={{ height: '70px', minWidth: `${cellWidth}px` }}
     >
       {cellEvents.map((event: Event) => (
         <EventBar 

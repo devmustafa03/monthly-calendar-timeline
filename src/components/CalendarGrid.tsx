@@ -10,7 +10,7 @@ interface CalendarGridProps {
 const CalendarGrid: React.FC<CalendarGridProps> = ({ onEventClick }) => {
   const { state } = useCalendar();
   const { currentDate, resources } = state;
-  const [cellWidth, setCellWidth] = useState(150);
+  const [cellWidth, setCellWidth] = useState(100);
   const cellRef = useRef<HTMLTableCellElement>(null);
 
   useEffect(() => {
@@ -26,15 +26,21 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ onEventClick }) => {
     return date.format('ddd');
   };
 
+  const isToday = (date: dayjs.Dayjs) => {
+    return date.isSame(dayjs(), 'day');
+  };
+
   return (
     <div className="flex-1 overflow-auto">
       <table className="w-max border-collapse">
         <thead>
           <tr>
-            <th className="border p-2">Resource</th>
+            <th className="border p-1"></th>
             {days.map((day) => (
-              <th key={day.date()} className="border p-2 w-20">
+              <th key={day.date()} className={`border p-1 w-12 text-sm font-normal text-left`}>
+                <div className={`${isToday(day) ? 'bg-[#007aff] px-3 pt-1 text-white rounded-3xl w-fit' : ''}`}>
                 {day.date()}{" "}{getDayName(day)}
+                </div>
               </th>
             ))}
           </tr>
